@@ -22,3 +22,126 @@ class Subject {
         double sum = 0;
         for (double grade : grades) {
             sum += grade;
+        }
+        return sum / grades.size();
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+class Student {
+    private final String name;
+    private final List<Subject> subjects = new ArrayList<>();
+
+    public Student(String name) {
+        this.name = name;
+    }
+
+    public void addSubject(Subject subject) {
+        subjects.add(subject);
+    }
+
+    public double getGeneralAverage() {
+        double total = 0;
+        for (Subject subject : subjects) {
+            total += subject.getFinalGrade();
+        }
+        return total / subjects.size();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public Subject getSubject(String name) {
+        for (Subject subject : subjects) {
+            if (subject.getName().equals(name)) {
+                return subject;
+            }
+        }
+        return null;
+    }
+    
+    public double getSubjectFinalGrade(String subjectName) {
+        Subject subject = getSubject(subjectName);
+        if (subject != null) {
+            return subject.getFinalGrade();
+        }
+        return -1;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<Student> students = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            System.out.print("Nombre del estudiante : ");
+            String studentName = scanner.nextLine();
+            Student student = new Student(studentName);
+
+            String[] subjects = {"Matematicas", "Fisica", "Espanol", "Ingles", "Filosofia"};
+
+            for (String subjectName : subjects) {
+                Subject subject = new Subject(subjectName);
+
+                for (int k = 0; k < 3; k++) {
+                    double grade;
+                    do {
+                        System.out.print("Pon la nota " + (k + 1) + " (0-5) de " + subjectName + ": ");
+                        grade = scanner.nextDouble();
+                        if (grade < 0 || grade > 5) {
+                            System.out.println("Nota no válida. Por favor ingrese una calificación entre 0 y 5.");
+                        }
+                    } while (grade < 0 || grade > 5);
+
+                    subject.addGrade(grade);
+                }
+
+                student.addSubject(subject);
+                scanner.nextLine();
+            }
+
+            students.add(student);
+        }
+
+        System.out.println("\nCalificaciones finales de cada alumno por asignatura:");
+        for (Student student : students) {
+            System.out.println(student.getName() + ":");
+            for (Subject subject : student.getSubjects()) {
+                System.out.println("  " + subject.getName() + ": " + subject.getFinalGrade());
+            }
+        }
+
+        System.out.println("\nPromedio general de cada alumno:");
+        for (Student student : students) {
+            System.out.println(student.getName() + ": " + student.getGeneralAverage());
+        }
+
+        System.out.println("\nNota media final de cada asignatura:");
+        for (Subject subject : students.get(0).getSubjects()) {
+            double total = 0;
+            for (Student student : students) {
+                total += student.getSubject(subject.getName()).getFinalGrade();
+            }
+            double subjectAverage = total / students.size();
+            System.out.println(subject.getName() + ": " + subjectAverage);
+        }
+        
+        System.out.println("\nNota final de cada alumno por asignatura:");
+        for (Student student : students) {
+            System.out.println(student.getName() + ":");
+            for (Subject subject : student.getSubjects()) {
+                System.out.println("  " + subject.getName() + ": " + student.getSubjectFinalGrade(subject.getName()));
+            }
+        }
+    }
+}
